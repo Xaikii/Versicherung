@@ -22,7 +22,8 @@ public class VehicleValueService {
 
     @Transactional
     public VehicleValue getVehicle(VehicleValueID id) {
-	return repo.getReferenceById(id);
+	return repo.findById(id).orElseThrow(
+		() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vehicle has no Value or is not registered"));
     }
 
     @Transactional

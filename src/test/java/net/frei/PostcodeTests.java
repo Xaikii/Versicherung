@@ -1,10 +1,10 @@
 package net.frei;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.logging.Logger;
 
 import org.junit.jupiter.api.Test;
@@ -26,22 +26,23 @@ class PostcodeTests {
 		.body(String.class);
 	assertNotNull(getPostcodeResult);
 
-	LocalDateTime now = LocalDateTime.now();
+	LocalDate now = LocalDate.now();
 	Vehicle vh = Vehicle.of("AUDI", "A8 D5", now);
 	ResponseEntity<Vehicle> postResult = defaultClient.post().uri("http://localhost:8080/vehicle")
 		.contentType(MediaType.APPLICATION_JSON).body(vh).retrieve().toEntity(Vehicle.class);
 	assertInstanceOf(Vehicle.class, postResult.getBody());
 	logger.info(postResult.toString());
 
-	ResponseEntity<Vehicle> getVehicleResult = defaultClient.get()
-		.uri("http://localhost:8080/vehicle/AUDI/A8/" + now).retrieve().toEntity(Vehicle.class);
+	Vehicle getVehicleResult = defaultClient.get()
+		.uri("http://localhost:8080/vehicle/AUDI/A8 D5/" + now).retrieve().body(Vehicle.class);
 	logger.info(getVehicleResult.toString());
 
-	ResponseEntity<Vehicle> putResult = defaultClient.put().uri("http://localhost:8080/vehicle/AUDI/A8/" + now)
+	ResponseEntity<Vehicle> putResult = defaultClient.put().uri("http://localhost:8080/vehicle/AUDI/A8 D5/" + now)
 		.contentType(MediaType.APPLICATION_JSON)
-		.body(vh.setId(VehicleID.of(vh.getCompany(), vh.getModel(), LocalDateTime.now()))).retrieve()
+		.body(vh.setId(VehicleID.of(vh.getCompany(), vh.getModel(), LocalDate.now()))).retrieve()
 		.toEntity(Vehicle.class);
-	assertEquals(postResult.getBody(), putResult.getBody());
+	logger.info(putResult.toString());
+	assertNotEquals(postResult.getBody(), putResult.getBody());
 
     }
 

@@ -22,7 +22,7 @@ public class VehicleService {
 
     @Transactional
     public Vehicle getVehicle(VehicleID id) {
-	return repo.getReferenceById(id);
+	return repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vehicle is not registered"));
     }
 
     @Transactional

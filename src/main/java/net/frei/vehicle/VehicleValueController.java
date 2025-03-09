@@ -1,6 +1,6 @@
 package net.frei.vehicle;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class VehicleValueController {
 
     @GetMapping("/{company}/{model}/{produced}")
     public ResponseEntity<VehicleValue> getVehicle(@PathVariable(name = "company") String company,
-	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDateTime produced) {
+	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDate produced) {
 	return new ResponseEntity<>(service.getVehicle(VehicleValueID.of(company, model, produced)), HttpStatus.FOUND);
     }
 
@@ -42,14 +42,14 @@ public class VehicleValueController {
 
     @PutMapping("/{company}/{model}/{produced}")
     public ResponseEntity<VehicleValue> replaceVehicle(@RequestBody VehicleValue vh, @PathVariable(name = "company") String company,
-	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDateTime produced) {
+	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDate produced) {
 	return new ResponseEntity<>(service.replaceVehicle(vh, VehicleValueID.of(company, model, produced)),
 		HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{company}/{model}/{produced}")
     public ResponseEntity<Void> deleteVehicle(@PathVariable(name = "company") String company,
-	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDateTime produced) {
+	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDate produced) {
 	service.deleteVehicle(VehicleValueID.of(company, model, produced));
 	return new ResponseEntity<>(HttpStatus.GONE);
     }

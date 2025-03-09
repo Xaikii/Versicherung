@@ -22,7 +22,8 @@ public class BonusService {
 
     @Transactional
     public Bonus getBonus(BonusID id) {
-	return repo.getReferenceById(id);
+	return repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+		"Bonus is not registered for " + id.toString()));
     }
 
     @Transactional

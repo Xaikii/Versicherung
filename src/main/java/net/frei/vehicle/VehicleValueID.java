@@ -1,7 +1,7 @@
 package net.frei.vehicle;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 
 import jakarta.persistence.Embeddable;
@@ -11,7 +11,7 @@ import jakarta.persistence.OneToOne;
 public class VehicleValueID implements Serializable {
     private static final long serialVersionUID = -9027702146713521476L;
 
-    public static VehicleValueID of(String company, String model, LocalDateTime produced) {
+    public static VehicleValueID of(String company, String model, LocalDate produced) {
 	return new VehicleValueID(Vehicle.of(company, model, produced));
     }
     

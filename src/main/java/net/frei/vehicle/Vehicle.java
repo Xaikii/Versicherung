@@ -1,7 +1,7 @@
 package net.frei.vehicle;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -17,7 +17,7 @@ public class Vehicle implements Serializable {
      */
     private static final long serialVersionUID = -7003621006839101091L;
 
-    public static Vehicle of(String company, String model, LocalDateTime produced) {
+    public static Vehicle of(String company, String model, LocalDate produced) {
 	return new Vehicle(VehicleID.of(company, model, produced));
     }
     
@@ -48,7 +48,7 @@ public class Vehicle implements Serializable {
 	return id.getModel();
     }
 
-    public LocalDateTime getProduced() {
+    public LocalDate getProduced() {
 	return id.getProduced();
     }
     

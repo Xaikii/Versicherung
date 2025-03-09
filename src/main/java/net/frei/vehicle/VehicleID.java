@@ -1,7 +1,7 @@
 package net.frei.vehicle;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 
 import jakarta.persistence.Embeddable;
@@ -16,16 +16,16 @@ public class VehicleID implements Serializable {
     @NotBlank
     String model;
     @PastOrPresent
-    LocalDateTime produced;
+    LocalDate produced;
 
-    public static VehicleID of(String company, String model, LocalDateTime produced) {
+    public static VehicleID of(String company, String model, LocalDate produced) {
 	return new VehicleID(company, model, produced);
     }
     
     public VehicleID() {
     }
 
-    public VehicleID(String company, String model, LocalDateTime produced) {
+    public VehicleID(String company, String model, LocalDate produced) {
         this.company = company;
         this.model = model;
         this.produced =produced;
@@ -49,11 +49,11 @@ public class VehicleID implements Serializable {
         return this;
     }
 
-    public LocalDateTime getProduced() {
+    public LocalDate getProduced() {
         return produced;
     }
 
-    public VehicleID setProduced(LocalDateTime produced) {
+    public VehicleID setProduced(LocalDate produced) {
         this.produced = produced;
         return this;
     }

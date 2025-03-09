@@ -1,7 +1,8 @@
 package net.frei.bonus;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.Objects;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.ManyToOne;
@@ -20,7 +21,7 @@ public class BonusID implements Serializable {
     public VehicleValue vehicle;
     public float usage;
 
-    public static BonusID of(String company, String model, LocalDateTime produced, float vehicleValue, int plz, float postcodeValue, float usage) {
+    public static BonusID of(String company, String model, LocalDate produced, float vehicleValue, int plz, float postcodeValue, float usage) {
 	return new BonusID(new PostcodeValue(
 		new PostcodeValueID(new Postcode()), postcodeValue), new VehicleValue(VehicleValueID.of(company, model, produced), vehicleValue));
     }
@@ -55,6 +56,11 @@ public class BonusID implements Serializable {
 
     public void setUsage(float usage) {
         this.usage = usage;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(postcode, vehicle, usage);
     }
 
 }

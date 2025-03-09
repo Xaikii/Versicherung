@@ -1,6 +1,6 @@
 package net.frei.bonus;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class BonusController {
 
     @GetMapping("/{company}/{model}/{produced}/{plz}/{usage}")
     public ResponseEntity<Bonus> getBonus(@PathVariable(name = "company") String company,
-	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDateTime produced,
+	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDate produced,
 	    @PathVariable int plz, @PathVariable float usage) {
 	return new ResponseEntity<>(service.getBonus(new BonusID(postcodeService.getPostcodeValue(plz),
 		vehicleService.getVehicle(VehicleValueID.of(company, model, produced)))), HttpStatus.FOUND);
@@ -52,7 +52,7 @@ public class BonusController {
 
     @PutMapping("/{company}/{model}/{produced}/{plz}/{usage}")
     public ResponseEntity<Bonus> replaceBonus(@RequestBody Bonus bon, @PathVariable(name = "company") String company,
-	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDateTime produced,
+	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDate produced,
 	    @PathVariable int plz, @PathVariable float usage) {
 	return new ResponseEntity<>(
 		service.replaceBonus(bon,
@@ -63,7 +63,7 @@ public class BonusController {
 
     @DeleteMapping("/{company}/{model}/{produced}/{plz}/{usage}")
     public ResponseEntity<Void> deleteBonus(@PathVariable(name = "company") String company,
-	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDateTime produced,
+	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDate produced,
 	    @PathVariable int plz, @PathVariable float usage) {
 	service.deleteBonus(new BonusID(postcodeService.getPostcodeValue(plz),
 		vehicleService.getVehicle(VehicleValueID.of(company, model, produced))));
