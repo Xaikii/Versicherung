@@ -3,6 +3,7 @@ package net.frei.bonus;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import net.frei.UsageRate;
 import net.frei.postcode.PostcodeValue;
 import net.frei.vehicle.VehicleValue;
 
@@ -19,7 +20,7 @@ public class Bonus {
 
     public Bonus(BonusID id) {
 	this.id = id;
-	this.value = id.getPostcode().getValue() * id.getVehicle().getValue() * id.getUsage();
+	this.value = id.getPostcode().getValue() * id.getVehicle().getValue() * UsageRate.getUsageFactor(id.getUsage());
     }
 
     @Override
