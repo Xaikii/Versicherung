@@ -2,47 +2,49 @@ package net.frei.vehicle;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class VehicleService {
 
+    @Autowired
     private VehicleRepository repo;
-
-    public VehicleService(VehicleRepository repo) {
-	this.repo = repo;
-    }
 
     @Transactional
     public List<Vehicle> getVehicles() {
 	return repo.findAll();
     }
-    
+
     @Transactional
     public Vehicle getVehicle(VehicleID id) {
 	return repo.getReferenceById(id);
     }
 
     @Transactional
-    public boolean addVehicle(Vehicle vh) {
+    public Vehicle addVehicle(Vehicle vh) {
 	if (repo.exists(Example.of(vh))) {
-	    return false;
+	    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Vehicle already exists");
 	}
-	repo.save(vh);
-	return true;
+	return repo.save(vh);
     }
 
     @Transactional
-    public void replaceVehicle(Vehicle vh, VehicleID id) {
-	if(repo.existsById(id))
-	    repo.save(vh);
+    public Vehicle replaceVehicle(Vehicle vh, VehicleID id) {
+	if (repo.existsById(id))
+	    return repo.save(vh);
+	throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
-    
+
     @Transactional
     public void deleteVehicle(VehicleID id) {
-	repo.deleteById(id);
+	if (repo.existsById(id)) {
+	    repo.deleteById(id);
+	}
+	throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 }

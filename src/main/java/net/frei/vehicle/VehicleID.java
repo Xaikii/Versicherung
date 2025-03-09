@@ -18,17 +18,17 @@ public class VehicleID implements Serializable {
     @PastOrPresent
     LocalDateTime produced;
 
-    public static VehicleID of(String company, String model, String produced) {
+    public static VehicleID of(String company, String model, LocalDateTime produced) {
 	return new VehicleID(company, model, produced);
     }
     
     public VehicleID() {
     }
 
-    public VehicleID(String company, String model, String produced) {
+    public VehicleID(String company, String model, LocalDateTime produced) {
         this.company = company;
         this.model = model;
-        this.produced = LocalDateTime.parse(produced);
+        this.produced =produced;
     }
 
     public String getCompany() {

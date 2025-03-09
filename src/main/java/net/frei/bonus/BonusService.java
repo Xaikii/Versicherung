@@ -4,25 +4,16 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import jakarta.transaction.Transactional;
-import net.frei.UsageRate;
-import net.frei.bonus.Bonus.BonusID;
-import net.frei.postcode.PostcodeValue;
-import net.frei.postcode.PostcodeValueService;
-import net.frei.vehicle.VehicleValue;
-import net.frei.vehicle.VehicleValueService;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class BonusService {
 
     @Autowired
     private BonusRepository repo;
-    @Autowired
-    private PostcodeValueService pcService;
-    @Autowired
-    private VehicleValueService vhService;
 
     @Transactional
     public List<Bonus> getBonuses() {
@@ -35,31 +26,26 @@ public class BonusService {
     }
 
     @Transactional
-    public boolean addBonus(Bonus bon) {
-	if (repo.exists(Example.of(bon))) {
-	    return false;
+    public Bonus addBonus(Bonus bonus) {
+	if (repo.exists(Example.of(bonus))) {
+	    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bonus already exists");
 	}
-	repo.save(bon);
-	return true;
+	return repo.save(bonus);
     }
 
     @Transactional
-    public void replaceBonus(Bonus bon, BonusID id) {
+    public Bonus replaceBonus(Bonus bonus, BonusID id) {
 	if (repo.existsById(id))
-	    repo.save(bon);
+	    return repo.save(bonus);
+	throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
     @Transactional
     public void deleteBonus(BonusID id) {
-	repo.deleteById(id);
-    }
-
-    public float getAmount(BonusID bonus, float usage) {
-	return getAmount(pcService.getPostcodeValue(bonus.postcode.getId()), vhService.getVehicle(bonus.vehicle.getId()), usage);
-    }
-
-    public static float getAmount(PostcodeValue postcode, VehicleValue vehicle, float usage) {
-	return postcode.getValue() * vehicle.getValue() * UsageRate.getUsageFactor(usage);
+	if (repo.existsById(id)) {
+	    repo.deleteById(id);
+	}
+	throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
 }

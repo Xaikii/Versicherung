@@ -2,47 +2,49 @@ package net.frei.vehicle;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class VehicleValueService {
 
+    @Autowired
     private VehicleValueRepository repo;
-
-    public VehicleValueService(VehicleValueRepository repo) {
-	this.repo = repo;
-    }
 
     @Transactional
     public List<VehicleValue> getVehicles() {
 	return repo.findAll();
     }
-    
+
     @Transactional
     public VehicleValue getVehicle(VehicleValueID id) {
 	return repo.getReferenceById(id);
     }
 
     @Transactional
-    public boolean addVehicle(VehicleValue vh) {
+    public VehicleValue addVehicle(VehicleValue vh) {
 	if (repo.exists(Example.of(vh))) {
-	    return false;
+	    throw new ResponseStatusException(HttpStatus.FOUND, "Vehicle already has a Value");
 	}
-	repo.save(vh);
-	return true;
+	return repo.save(vh);
     }
 
     @Transactional
-    public void replaceVehicle(VehicleValue vh, VehicleValueID id) {
-	if(repo.existsById(id))
-	    repo.save(vh);
+    public VehicleValue replaceVehicle(VehicleValue vh, VehicleValueID id) {
+	if (repo.existsById(id))
+	    return repo.save(vh);
+	throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
-    
+
     @Transactional
     public void deleteVehicle(VehicleValueID id) {
-	repo.deleteById(id);
+	if (repo.existsById(id)) {
+	    repo.deleteById(id);
+	}
+	throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 }

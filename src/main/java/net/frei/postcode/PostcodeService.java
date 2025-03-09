@@ -2,48 +2,50 @@ package net.frei.postcode;
 
 import java.util.List;
 
-import org.springframework.data.domain.Example;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class PostcodeService {
 
+    @Autowired
     private PostcodeRepository repo;
-
-    public PostcodeService(PostcodeRepository repo) {
-	this.repo = repo;
-    }
 
     @Transactional
     public List<Postcode> getPostcodes() {
 	return repo.findAll();
     }
-    
+
     @Transactional
-    public Postcode getPostcode(int plz) {
-	return repo.getReferenceById(plz);
+    public Postcode getPostcode(int postcodeNumber) {
+	return repo.findById(postcodeNumber)
+		.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Postcode is not registered"));
     }
 
     @Transactional
-    public boolean addPostcode(Postcode pc) {
-	if (repo.exists(Example.of(pc))) {
-	    return false;
+    public Postcode addPostcode(Postcode postcode) {
+	if (repo.existsById(postcode.getPOSTLEITZAHL())) {
+	    throw new ResponseStatusException(HttpStatus.FOUND, "Postcode is already registered");
 	}
-	repo.save(pc);
-	return true;
+	return repo.save(postcode);
     }
 
     @Transactional
-    public void replacePostcode(Postcode pc, int plz) {
-	if(repo.existsById(plz))
-	    repo.save(pc);
+    public Postcode replacePostcode(Postcode postcode, int postcodeNumber) {
+	if (repo.existsById(postcodeNumber))
+	    return repo.save(postcode);
+	throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
-    
+
     @Transactional
-    public void deletePostcode(int plz) {
-	repo.deleteById(plz);
+    public void deletePostcode(int postcodeNumber) {
+	if (repo.existsById(postcodeNumber)) {
+	    repo.deleteById(postcodeNumber);
+	}
+	throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
-    
+
 }

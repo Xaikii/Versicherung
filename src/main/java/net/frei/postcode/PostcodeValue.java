@@ -20,9 +20,8 @@ public class PostcodeValue implements Serializable {
 
     private static final long serialVersionUID = -7815169774888625433L;
 
-    @EmbeddedId //Embedds an ID and makes it a Primary Key
+    @EmbeddedId // Embedds an ID and makes it a Primary Key
     private PostcodeValueID id;
-
     private float value;
 
     public PostcodeValue() {

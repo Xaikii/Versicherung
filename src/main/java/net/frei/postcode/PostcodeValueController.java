@@ -3,6 +3,8 @@ package net.frei.postcode;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,35 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 public class PostcodeValueController {
 
-    private final PostcodeValueService service;
-
     @Autowired
-    public PostcodeValueController(PostcodeValueService serv) {
-	this.service = serv;
-    }
+    private PostcodeValueService service;
 
     @GetMapping
-    public List<PostcodeValue> getPostcodes() {
-	return service.getPostcodeValues();
+    public ResponseEntity<List<PostcodeValue>> getPostcodes() {
+	return new ResponseEntity<>(service.getPostcodeValues(), HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/{plz}")
-    public PostcodeValue getPostcode(@PathVariable int plz) {
-	return service.getPostcodeValue(plz);
+    public ResponseEntity<PostcodeValue> getPostcode(@PathVariable int plz) {
+	return new ResponseEntity<>(service.getPostcodeValue(plz), HttpStatus.FOUND);
     }
 
-//    @PostMapping
-//    public void addPostcode(@RequestBody PostcodeValue pc) {
-//	service.addPostcode(pc);
-//    }
-//
-////    @PutMapping("/{plz}")
-//    public void replacePostcode(@RequestBody PostcodeValue pc, @PathVariable int plz) {
-//	service.replacePostcode(pc, plz);
-//    }
-//
-////    @DeleteMapping("/{plz}")
-//    public void deletePostcode(@PathVariable int plz) {
-//	service.deletePostcode(plz);
-//    }
 }

@@ -17,12 +17,8 @@ public class Vehicle implements Serializable {
      */
     private static final long serialVersionUID = -7003621006839101091L;
 
-    public static Vehicle of(String company, String model, String produced) {
-	return new Vehicle(VehicleID.of(company, model, produced));
-    }
-    
     public static Vehicle of(String company, String model, LocalDateTime produced) {
-	return new Vehicle(VehicleID.of(company, model, produced.toString()));
+	return new Vehicle(VehicleID.of(company, model, produced));
     }
     
     @EmbeddedId

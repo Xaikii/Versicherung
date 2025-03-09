@@ -1,8 +1,11 @@
 package net.frei.vehicle;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,38 +21,36 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 public class VehicleValueController {
 
-    private final VehicleValueService service;
-
     @Autowired
-    public VehicleValueController(VehicleValueService service) {
-	this.service = service;
-    }
+    private VehicleValueService service;
 
     @GetMapping
-    public List<VehicleValue> getVehicle() {
-	return service.getVehicles();
+    public ResponseEntity<List<VehicleValue>> getVehicle() {
+	return new ResponseEntity<>(service.getVehicles(), HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/{company}~{model}~{produced}")
-    public VehicleValue getVehicle(@PathVariable String company, @PathVariable String model,
-	    @PathVariable String produced) {
-	return service.getVehicle(VehicleValueID.of(company, model, produced));
+    @GetMapping("/{company}/{model}/{produced}")
+    public ResponseEntity<VehicleValue> getVehicle(@PathVariable(name = "company") String company,
+	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDateTime produced) {
+	return new ResponseEntity<>(service.getVehicle(VehicleValueID.of(company, model, produced)), HttpStatus.FOUND);
     }
 
     @PostMapping
-    public void addVehicle(@RequestBody VehicleValue vh) {
-	service.addVehicle(vh);
+    public ResponseEntity<VehicleValue> addVehicle(@RequestBody VehicleValue vh) {
+	return new ResponseEntity<>(service.addVehicle(vh), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{company}~{model}~{produced}")
-    public void replaceVehicle(@RequestBody VehicleValue vh, @PathVariable String company, @PathVariable String model,
-	    @PathVariable String produced) {
-	service.replaceVehicle(vh, VehicleValueID.of(company, model, produced));
+    @PutMapping("/{company}/{model}/{produced}")
+    public ResponseEntity<VehicleValue> replaceVehicle(@RequestBody VehicleValue vh, @PathVariable(name = "company") String company,
+	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDateTime produced) {
+	return new ResponseEntity<>(service.replaceVehicle(vh, VehicleValueID.of(company, model, produced)),
+		HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("/{company}~{model}~{produced}")
-    public void deleteVehicle(@PathVariable String company, @PathVariable String model,
-	    @PathVariable String produced) {
+    @DeleteMapping("/{company}/{model}/{produced}")
+    public ResponseEntity<Void> deleteVehicle(@PathVariable(name = "company") String company,
+	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDateTime produced) {
 	service.deleteVehicle(VehicleValueID.of(company, model, produced));
+	return new ResponseEntity<>(HttpStatus.GONE);
     }
 }

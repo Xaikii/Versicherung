@@ -3,6 +3,9 @@ package net.frei.bonus;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,43 +16,58 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.frei.bonus.Bonus.BonusID;
+import net.frei.postcode.PostcodeValueService;
+import net.frei.vehicle.VehicleValueID;
+import net.frei.vehicle.VehicleValueService;
 
 @RestController
 @RequestMapping("/bonus")
 @CrossOrigin
 public class BonusController {
 
-    private final BonusService service;
-
-    public BonusController(BonusService service) {
-	this.service = service;
-    }
+    @Autowired
+    private BonusService service;
+    @Autowired
+    private PostcodeValueService postcodeService;
+    @Autowired
+    private VehicleValueService vehicleService;
 
     @GetMapping
-    public List<Bonus> getBonus() {
-	return service.getBonuses();
+    public ResponseEntity<List<Bonus>> getBonus() {
+	return new ResponseEntity<>(service.getBonuses(), HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("{company}~{model}~{produced}&{plz}")
-    public Bonus getBonus(@PathVariable String company, @PathVariable String model,
-	    @PathVariable LocalDateTime produced, @PathVariable int plz) {
-	return service.getBonus(BonusID.of(company, model, produced, plz));
+    @GetMapping("/{company}/{model}/{produced}/{plz}/{usage}")
+    public ResponseEntity<Bonus> getBonus(@PathVariable(name = "company") String company,
+	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDateTime produced,
+	    @PathVariable int plz, @PathVariable float usage) {
+	return new ResponseEntity<>(service.getBonus(new BonusID(postcodeService.getPostcodeValue(plz),
+		vehicleService.getVehicle(VehicleValueID.of(company, model, produced)))), HttpStatus.FOUND);
     }
 
     @PostMapping
-    public void addBonus(@RequestBody Bonus bon) {
-	service.addBonus(bon);
+    public ResponseEntity<Bonus> addBonus(@RequestBody Bonus bon) {
+	return new ResponseEntity<>(service.addBonus(bon), HttpStatus.CREATED);
     }
 
-    @PutMapping("{company}~{model}~{produced}&{plz}")
-    public void replaceBonus(@RequestBody Bonus bon, @RequestBody BonusID id) {
-	service.replaceBonus(bon, id);
+    @PutMapping("/{company}/{model}/{produced}/{plz}/{usage}")
+    public ResponseEntity<Bonus> replaceBonus(@RequestBody Bonus bon, @PathVariable(name = "company") String company,
+	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDateTime produced,
+	    @PathVariable int plz, @PathVariable float usage) {
+	return new ResponseEntity<>(
+		service.replaceBonus(bon,
+			new BonusID(postcodeService.getPostcodeValue(plz),
+				vehicleService.getVehicle(VehicleValueID.of(company, model, produced)))),
+		HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("{company}~{model}~{produced}&{plz}")
-    public void deleteBonus(@RequestBody BonusID id) {
-	service.deleteBonus(id);
+    @DeleteMapping("/{company}/{model}/{produced}/{plz}/{usage}")
+    public ResponseEntity<Void> deleteBonus(@PathVariable(name = "company") String company,
+	    @PathVariable(name = "model") String model, @PathVariable(name = "produced") LocalDateTime produced,
+	    @PathVariable int plz, @PathVariable float usage) {
+	service.deleteBonus(new BonusID(postcodeService.getPostcodeValue(plz),
+		vehicleService.getVehicle(VehicleValueID.of(company, model, produced))));
+	return new ResponseEntity<>(HttpStatus.GONE);
     }
 
 }
